@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UMD 组件测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      color: #444;
+    }
+
+    .btn {
+      margin: 5px;
+    }
+
+    .debug-info {
+      background-color: #f5f5f5;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <custom-button type="primary" @click="handleClick"></custom-button>
+    <custom-button type="secondary" text="次要按钮"></custom-button>
+    <custom-input v-model="inputValue" placeholder="请输入内容"></custom-input>
+    <p>输入的值: {{ inputValue }}</p>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="./dist/CustomButton.umd.cjs"></script>
+  <script src="./dist/CustomInput.umd.cjs"></script>
+  <script>
+    const { createApp, ref } = Vue;
+    createApp({
+      components: {
+        'custom-button': window.CustomButton,
+        'custom-input': window.CustomInput,
+      },
+      setup() {
+        const inputValue = ref('');
+        console.log(CustomInput);
+        return {
+          inputValue
+        };
+      },
+      methods: {
+        handleClick() {
+          alert('按钮被点击了!');
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+
+</html>

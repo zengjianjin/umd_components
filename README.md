@@ -1,39 +1,103 @@
-# umd_components
+# UMD组件库开发环境
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+这是一个基于Vue 3、TypeScript和Vite的UMD格式组件库开发环境。您可以使用此项目开发和构建可独立使用的UMD格式组件。
 
-#### 软件架构
-软件架构说明
+## 项目特点
 
+- 支持Vue 3组件开发
+- 每个组件可单独打包为UMD格式
+- 提供可视化组件预览界面
+- 支持TypeScript
+- 使用Vite作为构建工具
 
-#### 安装教程
+## 项目结构
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+```
+umd_components/
+├── src/
+│   ├── components/        # 组件源码目录
+│   │   ├── HelloWorld.vue
+│   │   └── Button.vue
+│   ├── lib/              # 组件库导出入口
+│   │   └── index.ts
+│   ├── App.vue           # 组件预览页面
+│   └── main.ts
+├── scripts/
+│   └── build.js          # UMD构建脚本
+├── dist/                 # 构建输出目录
+│   └── umd/              # UMD格式组件输出目录
+└── package.json
+```
 
-#### 使用说明
+## 开发指南
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 添加新组件
 
-#### 参与贡献
+1. 在`src/components`目录下创建新的Vue组件文件
+2. 在`src/lib/index.ts`中导出新组件
+3. 在`src/App.vue`中导入并添加到组件列表
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+### 预览组件
 
+运行开发服务器，在浏览器中预览和测试组件：
 
-#### 特技
+```bash
+npm run dev
+```
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+### 构建UMD组件
+
+运行以下命令将所有组件构建为独立的UMD格式文件：
+
+```bash
+npm run build:umd
+```
+
+构建完成后，UMD文件将输出到`dist/umd`目录。
+
+## 使用示例
+
+### 在HTML中使用UMD组件
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UMD组件示例</title>
+</head>
+<body>
+  <div id="app">
+    <my-button type="primary">点击我</my-button>
+  </div>
+
+  <!-- 引入Vue -->
+  <script src="https://unpkg.com/vue@next"></script>
+  <!-- 引入UMD组件 -->
+  <script src="./dist/umd/Button.js"></script>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      components: {
+        'my-button': Button
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
+```
+
+## 技术栈
+
+- Vue 3
+- TypeScript
+- Vite
+- Node.js
+
+## 许可证
+
+MIT
+
