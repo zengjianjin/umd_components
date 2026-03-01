@@ -6,7 +6,7 @@
 
 <script setup>
 
-// 定义属性
+// Define props
 const props = defineProps({
   type: {
     type: String,
@@ -23,10 +23,10 @@ const props = defineProps({
   }
 });
 
-// 定义事件
+// Define events
 const emit = defineEmits(['click']);
 
-// 处理点击事件
+// Handle click event
 const handleClick = (event) => {
   if (!props.disabled) {
     emit('click', event);

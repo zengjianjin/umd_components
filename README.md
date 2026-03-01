@@ -1,63 +1,68 @@
-# UMD组件库开发环境
+# UMD Components Development Environment
 
-这是一个基于Vue 3、TypeScript和Vite的UMD格式组件库开发环境。您可以使用此项目开发和构建可独立使用的UMD格式组件。
+[中文](./README_ZH.md) | English
 
-## 项目特点
+This is a UMD format component library development environment based on Vue 3 and Vite. You can use this project to develop and build standalone UMD format components.
 
-- 支持Vue 3组件开发
-- 每个组件可单独打包为UMD格式
-- 提供可视化组件预览界面
-- 支持TypeScript
-- 使用Vite作为构建工具
+## Project Features
 
-## 项目结构
+- Support for Vue 3 component development
+- Each component can be individually packaged in UMD format
+- Provides a visual component preview interface
+- Automatically imports all components from the components folder
+- Uses Vite as the build tool
+- Base pixel width is 375px
+
+## Project Structure
 
 ```
 umd_components/
 ├── src/
-│   ├── components/        # 组件源码目录
-│   │   ├── HelloWorld.vue
-│   │   └── Button.vue
-│   ├── lib/              # 组件库导出入口
-│   │   └── index.ts
-│   ├── App.vue           # 组件预览页面
-│   └── main.ts
+│   ├── components/        # Component source directory
+│   │   ├── CustomButton.vue   # Custom button component
+│   │   ├── CustomInput.vue    # Custom input component
+│   │   └── CustomHead.vue     # Custom header component
+│   ├── App.vue           # Component preview page
+│   └── main.js
 ├── scripts/
-│   └── build.js          # UMD构建脚本
-├── dist/                 # 构建输出目录
-│   └── umd/              # UMD格式组件输出目录
+│   └── build.js          # UMD build script
+├── dist/                 # Build output directory
+│   ├── CustomButton.umd.js   # Button component UMD file
+│   ├── CustomInput.umd.js    # Input component UMD file
+│   └── CustomHead.umd.js     # Header component UMD file
+├── test.html             # UMD component test page
+├── vue.js                # Vue runtime file
 └── package.json
 ```
 
-## 开发指南
+## Development Guide
 
-### 添加新组件
+### Adding New Components
 
-1. 在`src/components`目录下创建新的Vue组件文件
-2. 在`src/lib/index.ts`中导出新组件
-3. 在`src/App.vue`中导入并添加到组件列表
+1. Create a new Vue component file in the `src/components` directory
+2. Components will be automatically imported by App.vue, no manual configuration needed
 
-### 预览组件
+### Previewing Components
 
-运行开发服务器，在浏览器中预览和测试组件：
+Run the development server to preview and test components in your browser:
 
 ```bash
 npm run dev
 ```
 
-### 构建UMD组件
+### Building UMD Components
 
-运行以下命令将所有组件构建为独立的UMD格式文件：
+Run the following command to build all components as standalone UMD format files:
 
 ```bash
 npm run build:umd
 ```
 
-构建完成后，UMD文件将输出到`dist/umd`目录。
+After building, UMD files will be output to the `dist` directory with the format `ComponentName.umd.js`.
 
-## 使用示例
+## Usage Examples
 
-### 在HTML中使用UMD组件
+### Using UMD Components in HTML
 
 ```html
 <!DOCTYPE html>
@@ -65,24 +70,39 @@ npm run build:umd
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UMD组件示例</title>
+  <title>UMD Component Example</title>
 </head>
 <body>
   <div id="app">
-    <my-button type="primary">点击我</my-button>
+    <custom-button type="primary" @click="handleClick">Click Me</custom-button>
+    <custom-input v-model="inputValue" placeholder="Enter content"></custom-input>
+    <p>Input value: {{ inputValue }}</p>
   </div>
 
-  <!-- 引入Vue -->
-  <script src="https://unpkg.com/vue@next"></script>
-  <!-- 引入UMD组件 -->
-  <script src="./dist/umd/Button.js"></script>
+  <!-- Import Vue -->
+  <script src="./vue.js"></script>
+  <!-- Import UMD components -->
+  <script src="./dist/CustomButton.umd.js"></script>
+  <script src="./dist/CustomInput.umd.js"></script>
 
   <script>
-    const { createApp } = Vue;
+    const { createApp, ref } = Vue;
 
     createApp({
       components: {
-        'my-button': Button
+        'custom-button': CustomButton,
+        'custom-input': CustomInput,
+      },
+      setup() {
+        const inputValue = ref('');
+        return {
+          inputValue
+        };
+      },
+      methods: {
+        handleClick() {
+          alert('Button clicked!');
+        }
       }
     }).mount('#app');
   </script>
@@ -90,14 +110,12 @@ npm run build:umd
 </html>
 ```
 
-## 技术栈
+## Tech Stack
 
 - Vue 3
-- TypeScript
 - Vite
 - Node.js
 
-## 许可证
+## License
 
 MIT
-

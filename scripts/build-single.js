@@ -1,4 +1,3 @@
-
 import { resolve } from 'path'
 import { readdirSync, statSync } from 'fs'
 import { build } from 'vite'
@@ -79,37 +78,37 @@ async function buildComponent(component) {
       cssMinify: true
     }
   })
-  
+
   // Inject CSS file content into UMD file
   const cssFilePath = resolve(outputDir, `${component.name}.css`)
   const umdFilePath = resolve(outputDir, `${component.name}.umd.js`)
-  
+
   if (fs.existsSync(umdFilePath)) {
     let cssContent = '';
     if (fs.existsSync(cssFilePath)) {
       cssContent = fs.readFileSync(cssFilePath, 'utf-8');
     }
     const umdContent = fs.readFileSync(umdFilePath, 'utf-8')
-    
+
     // Inject CSS at the beginning of UMD file (if exists)
     const cssInjection = `
 (function() {
   var style = document.createElement('style');
   style.type = 'text/css';
-  style.innerHTML = \`${cssContent.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`;
+  style.innerHTML = \`${cssContent.replace(/`/g, '\`').replace(/\\/g, '\\\\')}\`;
   document.head.appendChild(style);
 })();
 `
-    
+
     // Modified UMD content
     let modifiedUmdContent = umdContent;
     if (cssContent) {
       modifiedUmdContent = cssInjection + umdContent;
     }
-    
+
     // Write back to UMD file
     fs.writeFileSync(umdFilePath, modifiedUmdContent, 'utf-8')
-    
+
     // Remove standalone CSS file (if exists)
     if (fs.existsSync(cssFilePath)) {
       fs.removeSync(cssFilePath);
@@ -119,41 +118,34 @@ async function buildComponent(component) {
   console.log(`Component ${component.name} build completed`)
 }
 
-// Main function
-async function buildAll() {
+// Build specified single component
+async function buildSingle(componentName) {
   const components = getComponents(componentsDir)
+  const targetComponent = components.find(comp => comp.name === componentName)
 
-  if (components.length === 0) {
-    console.log('No component files found')
-    return
+  if (!targetComponent) {
+    console.error(`Component not found: ${componentName}`)
+    console.log('Available components:', components.map(c => c.name).join(', '))
+    process.exit(1)
   }
 
-  console.log(`Found ${components.length} components`)
+  await buildComponent(targetComponent)
+  console.log(`Component ${componentName} build completed`)
+}
 
-  // Build all components in parallel
-  await Promise.all(components.map(component => buildComponent(component)))
-  
-  // Move static assets to assets folder
-  const assetsDir = resolve(outputDir, 'assets')
-  fs.ensureDirSync(assetsDir)
-  
-  // Move all non-UMD files to assets folder
-  const files = fs.readdirSync(outputDir)
-  files.forEach(file => {
-    const filePath = resolve(outputDir, file)
-    const stat = fs.statSync(filePath)
-    
-    if (stat.isFile() && !file.endsWith('.umd.js')) {
-      const destPath = resolve(assetsDir, file)
-      fs.moveSync(filePath, destPath, { overwrite: true })
-    }
-  })
+// Get command line arguments
+const args = process.argv.slice(2)
 
-  console.log('All components build completed')
+if (args.length === 0) {
+  console.error('Please specify the component name to build')
+  console.log('Usage: node scripts/build-single.js <component-name>')
+  console.log('Example: node scripts/build-single.js CustomButton')
+  process.exit(1)
 }
 
 // Execute build
-buildAll().catch(error => {
+const componentName = args[0]
+buildSingle(componentName).catch(error => {
   console.error('Error occurred during build:', error)
   process.exit(1)
 })

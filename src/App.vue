@@ -1,63 +1,40 @@
-<script setup>
-import { ref, reactive } from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
-import CustomButton from './components/CustomButton.vue';
-import CustomInput from './components/CustomInput.vue';
-
-// 当前选中的组件
-const activeComponent = ref('HelloWorld');
-
-// 组件列表
-const componentList = reactive([
-  { name: 'HelloWorld', component: 'HelloWorld' },
-  { name: 'Button', component: 'CustomButton' },
-  { name: 'CustomInput', component: 'CustomInput' },
-]);
-
-// 动态导入组件
-const getComponent = (name) => {
-  switch (name) {
-    case 'HelloWorld':
-      return HelloWorld;
-    case 'Button':
-      return CustomButton;
-    case 'CustomInput':
-      return CustomInput;
-    default:
-      return null;
-  }
-};
-</script>
-
 <template>
   <div class="app-container">
     <header class="header">
-      <h1>UMD组件库开发环境</h1>
-      <p>开发和预览您的组件，构建后将生成UMD格式的独立文件</p>
+      <h1>{{ t.title }}</h1>
+      <p>{{ t.description }}</p>
+      <button class="lang-toggle" @click="toggleLanguage">{{
+          currentLang === 'zh' ? 'EN' : '中文'
+        }}
+      </button>
     </header>
 
     <div class="content">
       <aside class="sidebar">
-        <h2>组件列表</h2>
+        <h2>{{ t.componentList }}</h2>
         <ul class="component-list">
-          <li v-for="item in componentList" :key="item.name" :class="{ active: activeComponent === item.name }"
-            @click="activeComponent = item.name">
+          <li v-for="item in componentList" :key="item.name"
+              :class="{ active: activeComponent === item.name }"
+              @click="activeComponent = item.name">
             {{ item.name }}
           </li>
         </ul>
         <div class="build-info">
-          <p>运行以下命令构建UMD组件:</p>
+          <p>{{ t.buildInfo }}</p>
           <code>npm run build:umd</code>
+          <p>{{ t.singleBuildInfo }}</p>
+          <code>npm run build:umd:single {{ activeComponent }}</code>
         </div>
       </aside>
 
       <main class="preview">
         <div class="component-preview">
-          <h2>{{ activeComponent }} 组件预览</h2>
+          <h2>{{ activeComponent }} {{ t.preview }}</h2>
           <div class="preview-area">
-            <component :is="getComponent(activeComponent)" v-if="getComponent(activeComponent)" />
+            <img alt="" src="./assets/header.png">
+            <component :is="getComponent(activeComponent)" v-if="getComponent(activeComponent)"/>
             <div v-else class="no-component">
-              请选择一个组件进行预览
+              {{ t.noComponent }}
             </div>
           </div>
         </div>
@@ -65,31 +42,107 @@ const getComponent = (name) => {
     </div>
   </div>
 </template>
+<script setup>
+import { computed, markRaw, reactive, ref } from 'vue'
+import translations from './config/translations.js'
+
+// 自动导入components文件夹下所有组件
+const components = import.meta.glob('./components/*.vue')
+
+// 组件映射对象
+const componentMap = reactive({})
+
+// 当前选中的组件
+const activeComponent = ref('')
+
+// 组件列表
+const componentList = reactive([])
+
+// 当前语言
+const currentLang = ref('en')
+
+// 切换语言
+const toggleLanguage = () => {
+  currentLang.value = currentLang.value === 'zh' ? 'en' : 'zh'
+}
+
+// 获取当前语言的翻译
+const t = computed(() => {
+  return translations[currentLang.value]
+})
+
+// 动态加载组件
+const loadComponents = async () => {
+  for (const path in components) {
+    const componentName = path.match(/\.\/components\/(.*)\.vue$/)[1]
+    const module = await components[path]()
+    componentMap[componentName] = markRaw(module.default)
+
+    // 添加到组件列表
+    componentList.push({
+      name: componentName,
+      component: componentName,
+    })
+  }
+}
+
+// 初始化加载组件
+loadComponents()
+
+// 获取组件
+const getComponent = (name) => {
+  return componentMap[name] || null
+}
+</script>
 
 <style scoped>
 .app-container {
   font-family: Arial, sans-serif;
-  max-width: 1200px;
+  max-width: 715px;
   margin: 0 auto;
   padding: 20px;
   color: #333;
 }
 
 .header {
+  position: relative;
   text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
   border-bottom: 1px solid #eee;
 }
 
 .header h1 {
   margin: 0;
-  color: #2c3e50;
+  color: #42b983;
+}
+
+.header p {
+  color: #999;
+}
+
+.lang-toggle {
+  position: absolute;
+  top: 20px;
+  right: 0px;
+  padding: 6px 12px;
+  background-color: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.lang-toggle:hover {
+  background-color: #3aa876;
 }
 
 .content {
   display: flex;
-  gap: 20px;
+  align-items: stretch;
+  justify-content: space-between;
 }
 
 .sidebar {
@@ -147,11 +200,18 @@ const getComponent = (name) => {
 }
 
 .preview {
-  flex: 1;
+  width: 375px;
+  height: 667px;
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.component-preview {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .component-preview h2 {
@@ -161,18 +221,24 @@ const getComponent = (name) => {
 }
 
 .preview-area {
-  margin-top: 20px;
-  padding: 20px;
-  border: 1px dashed #ddd;
-  border-radius: 4px;
-  min-height: 200px;
+  margin-top: 17px;
+  border: 1px solid #ddd;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-area > img {
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid #ddd;
 }
 
 .no-component {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 200px;
+  flex: 1;
   color: #999;
 }
 </style>

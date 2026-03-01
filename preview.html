@@ -4,11 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UMD 组件测试</title>
+  <title>UMD Component Test</title>
   <style>
-    body {
+    html,body {
+      width: 100%;
+      height: 100%;
       font-family: Arial, sans-serif;
-      padding: 20px;
+      margin: 0;
     }
 
     h1 {
@@ -37,32 +39,34 @@
 
 <body>
   <div id="app">
+    <custom-head></custom-head>
     <custom-button type="primary" @click="handleClick"></custom-button>
-    <custom-button type="secondary" text="次要按钮"></custom-button>
-    <custom-input v-model="inputValue" placeholder="请输入内容"></custom-input>
-    <p>输入的值: {{ inputValue }}</p>
+    <custom-button type="secondary" text="Secondary Button"></custom-button>
+    <custom-input v-model="inputValue" placeholder="Please enter content"></custom-input>
+    <p>Input value: {{ inputValue }}</p>
   </div>
 
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="./dist/CustomButton.umd.cjs"></script>
-  <script src="./dist/CustomInput.umd.cjs"></script>
+  <script src="./vue.js"></script>
+  <script src="./dist/CustomButton.umd.js"></script>
+  <script src="./dist/CustomInput.umd.js"></script>
+  <script src="./dist/CustomHead.umd.js"></script>
   <script>
     const { createApp, ref } = Vue;
     createApp({
       components: {
-        'custom-button': window.CustomButton,
-        'custom-input': window.CustomInput,
+        'custom-button': CustomButton,
+        'custom-input': CustomInput,
+        'custom-head':CustomHead,
       },
       setup() {
         const inputValue = ref('');
-        console.log(CustomInput);
         return {
           inputValue
         };
       },
       methods: {
         handleClick() {
-          alert('按钮被点击了!');
+          alert('Button clicked!');
         }
       }
     }).mount('#app');

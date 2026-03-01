@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:umd": "node scripts/build.js",
+    "build:umd:single": "node scripts/build-single.js",
     "validate:dist": "node scripts/validate-dist-new.js",
     "preview": "vite preview"
   },
