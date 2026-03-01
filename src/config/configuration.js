@@ -1,0 +1,42 @@
+export const configuration = {
+  TEXT: 'text',
+  NUMBER: 'number',
+  CHECKBOX: 'checkbox',
+  RADIO: 'radio',
+  IMAGE: 'image',
+  COLOR: 'color',
+  BUTTON: 'button',
+  RANGE: 'range',
+  DATE: 'date',
+  TIME: 'time',
+  EMAIL: 'email',
+  PASSWORD: 'password',
+  FILE: 'file',
+  TEXTAREA: 'textarea',
+  URL: 'url',
+  TEL: 'tel',
+  SELECT: 'select',
+  BOOLEAN: 'boolean', // for checkbox and radio
+  ARRAY: 'array',
+}
+export const formInput = [
+  'text',
+  'number',
+  'image',
+  'color',
+  'button',
+  'range',
+  'date',
+  'time',
+  'email',
+  'password',
+  'file',
+  'textarea',
+  'url',
+  'tel',
+]
+export const formCheck = [
+  'checkbox',
+  'radio',
+  'boolean',
+]

@@ -3,10 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>UMD Component Test</title>
   <style>
-    html,body {
+    html, body {
       width: 100%;
       height: 100%;
       font-family: Arial, sans-serif;
@@ -38,39 +38,23 @@
 </head>
 
 <body>
-  <div id="app">
-    <custom-head></custom-head>
-    <custom-button type="primary" @click="handleClick"></custom-button>
-    <custom-button type="secondary" text="Secondary Button"></custom-button>
-    <custom-input v-model="inputValue" placeholder="Please enter content"></custom-input>
-    <p>Input value: {{ inputValue }}</p>
-  </div>
+<div id="app">
+  <custom-head></custom-head>
+  <custom-list></custom-list>
+</div>
 
-  <script src="./vue.js"></script>
-  <script src="./dist/CustomButton.umd.js"></script>
-  <script src="./dist/CustomInput.umd.js"></script>
-  <script src="./dist/CustomHead.umd.js"></script>
-  <script>
-    const { createApp, ref } = Vue;
-    createApp({
-      components: {
-        'custom-button': CustomButton,
-        'custom-input': CustomInput,
-        'custom-head':CustomHead,
-      },
-      setup() {
-        const inputValue = ref('');
-        return {
-          inputValue
-        };
-      },
-      methods: {
-        handleClick() {
-          alert('Button clicked!');
-        }
-      }
-    }).mount('#app');
-  </script>
+<script src="./vue.js"></script>
+<script src="./dist/CustomList.umd.js"></script>
+<script src="./dist/CustomHead.umd.js"></script>
+<script>
+  const { createApp } = Vue
+  createApp({
+    components: {
+      'custom-list': CustomList,
+      'custom-head': CustomHead,
+    },
+  }).mount('#app')
+</script>
 </body>
 
 </html>

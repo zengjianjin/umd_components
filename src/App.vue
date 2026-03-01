@@ -26,26 +26,55 @@
           <code>npm run build:umd:single {{ activeComponent }}</code>
         </div>
       </aside>
-
       <main class="preview">
         <div class="component-preview">
           <h2>{{ activeComponent }} {{ t.preview }}</h2>
           <div class="preview-area">
             <img alt="" src="./assets/header.png">
-            <component :is="getComponent(activeComponent)" v-if="getComponent(activeComponent)"/>
+            <component :is="getComponent(activeComponent)" v-if="getComponent(activeComponent)"
+                       ref="currentComponent" :data="componentData"/>
             <div v-else class="no-component">
               {{ t.noComponent }}
             </div>
           </div>
         </div>
       </main>
+      <aside class="configuration">
+        <div v-for="(item,index) in componentDescription">
+          <template v-if="item.type==='array'">
+            <div v-for="n in componentData[index].length" class="arrayBox">
+              <div v-for="(subItem, subIndex) in item.data">
+                <div>{{ subItem.label }}</div>
+                <input v-model="componentData[index][n-1][subIndex]" :type="subItem.type"/>
+              </div>
+            </div>
+          </template>
+          <template v-if="item.type!=='array'">
+            <div v-for="(subItem,subIndex) in item">
+              <div>{{ subItem.label }}</div>
+              <template v-if="formCheck.includes(subItem.type)">
+                <label v-for="data in subItem.data"
+                       @click="componentData[index] = data.value">
+                  <input :name="`${index}-${subIndex}`"
+                         :type="subItem.type"
+                         :value="data.value">
+                  {{ data.label }}
+                </label>
+              </template>
+              <template v-if="formInput.includes(subItem.type)">
+                <input v-model="componentData[index][subIndex]" :type="subItem.type">
+              </template>
+            </div>
+          </template>
+        </div>
+      </aside>
     </div>
   </div>
 </template>
 <script setup>
-import { computed, markRaw, reactive, ref } from 'vue'
+import { computed, markRaw, reactive, ref, watch } from 'vue'
 import translations from './config/translations.js'
-
+import { formCheck, formInput } from './config/configuration.js'
 // 自动导入components文件夹下所有组件
 const components = import.meta.glob('./components/*.vue')
 
@@ -66,6 +95,9 @@ const toggleLanguage = () => {
   currentLang.value = currentLang.value === 'zh' ? 'en' : 'zh'
 }
 
+const currentComponent = ref(null)
+const componentData = ref({})
+const componentDescription = ref({})
 // 获取当前语言的翻译
 const t = computed(() => {
   return translations[currentLang.value]
@@ -93,12 +125,19 @@ loadComponents()
 const getComponent = (name) => {
   return componentMap[name] || null
 }
+
+watch(() => currentComponent.value, (newVal) => {
+  if (!newVal) return
+  console.log(newVal.argument)
+  componentData.value = newVal.argument
+  componentDescription.value = newVal.description
+})
 </script>
 
 <style scoped>
 .app-container {
   font-family: Arial, sans-serif;
-  max-width: 715px;
+  max-width: 1015px;
   margin: 0 auto;
   padding: 20px;
   color: #333;
@@ -123,7 +162,7 @@ const getComponent = (name) => {
 
 .lang-toggle {
   position: absolute;
-  top: 20px;
+  bottom: 20px;
   right: 0px;
   padding: 6px 12px;
   background-color: #42b983;
@@ -234,11 +273,24 @@ const getComponent = (name) => {
   border-bottom: 1px solid #ddd;
 }
 
+.configuration {
+  width: 300px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
 .no-component {
   display: flex;
   align-items: center;
   justify-content: center;
   flex: 1;
   color: #999;
+}
+
+.arrayBox {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 </style>

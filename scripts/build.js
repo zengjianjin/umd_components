@@ -50,6 +50,11 @@ async function buildComponent(component) {
   await build({
     configFile: false,
     plugins: [vue()],
+    resolve: {
+      alias: {
+        '@': resolve(__dirname, '../src')
+      }
+    },
     build: {
       emptyOutDir: false,
       rollupOptions: {
