@@ -113,7 +113,6 @@ defineExpose({
   description,
 })
 watch(() => props.data, n => {
-  console.log(1321)
   for (const nKey in n) {
     argument[nKey] = n[nKey]
   }

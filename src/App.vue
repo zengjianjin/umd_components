@@ -30,7 +30,7 @@
         <div class="component-preview">
           <h2>{{ activeComponent }} {{ t.preview }}</h2>
           <div class="preview-area">
-            <img alt="" src="./assets/header.png">
+            <img alt="" :src="headerImg">
             <component :is="getComponent(activeComponent)" v-if="getComponent(activeComponent)"
                        ref="currentComponent" :data="componentData"/>
             <div v-else class="no-component">
@@ -40,29 +40,31 @@
         </div>
       </main>
       <aside class="configuration">
-        <div v-for="(item,index) in componentDescription">
-          <template v-if="item.type==='array'">
-            <div v-for="n in componentData[index].length" class="arrayBox">
-              <div v-for="(subItem, subIndex) in item.data">
+        <div v-for="(item, index) in componentDescription" :key="index">
+          <!-- array 类型：列表项数据，按行渲染 -->
+          <template v-if="item.type === 'array'">
+            <div v-for="(row, rowIdx) in componentData[index]" :key="rowIdx" class="arrayBox">
+              <div v-for="(subItem, subKey) in item.data" :key="subKey">
                 <div>{{ subItem.label }}</div>
-                <input v-model="componentData[index][n-1][subIndex]" :type="subItem.type"/>
+                <input v-model="componentData[index][rowIdx][subKey]" :type="subItem.type"/>
               </div>
             </div>
           </template>
-          <template v-if="item.type!=='array'">
-            <div v-for="(subItem,subIndex) in item">
+          <!-- 普通对象类型：按字段描述渲染 -->
+          <template v-else>
+            <div v-for="(subItem, subKey) in item" :key="subKey">
               <div>{{ subItem.label }}</div>
               <template v-if="formCheck.includes(subItem.type)">
-                <label v-for="data in subItem.data"
-                       @click="componentData[index] = data.value">
-                  <input :name="`${index}-${subIndex}`"
+                <label v-for="option in subItem.data" :key="option.value">
+                  <input :name="`${index}-${subKey}`"
                          :type="subItem.type"
-                         :value="data.value">
-                  {{ data.label }}
+                         :value="option.value"
+                         @click="componentData[index][subKey] = option.value">
+                  {{ option.label }}
                 </label>
               </template>
-              <template v-if="formInput.includes(subItem.type)">
-                <input v-model="componentData[index][subIndex]" :type="subItem.type">
+              <template v-else-if="formInput.includes(subItem.type)">
+                <input v-model="componentData[index][subKey]" :type="subItem.type">
               </template>
             </div>
           </template>
@@ -75,6 +77,7 @@
 import { computed, markRaw, reactive, ref, watch } from 'vue'
 import translations from './config/translations.js'
 import { formCheck, formInput } from './config/configuration.js'
+import headerImg from './assets/header.png'
 // 自动导入components文件夹下所有组件
 const components = import.meta.glob('./components/*.vue')
 

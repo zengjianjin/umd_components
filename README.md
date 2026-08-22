@@ -34,7 +34,7 @@ umd_components/
 │   └── build.js          # UMD build script
 ├── dist/                 # Build output directory
 │   └── CustomHead.umd.js     # Header component UMD file
-├── test.html             # UMD component test page
+├── preview.html          # UMD component test page
 ├── vue.js                # Vue runtime file
 └── package.json
 ```

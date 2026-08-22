@@ -25,7 +25,8 @@ function getDistFiles(dir) {
     const filePath = resolve(dir, item)
     const stat = statSync(filePath)
 
-    if (stat.isFile() && item.endsWith('.umd.cjs')) {
+    // 构建脚本输出格式为 .umd.js（见 scripts/build.js 中 fileName 配置）
+    if (stat.isFile() && item.endsWith('.umd.js')) {
       files.push({
         name: item,
         path: filePath,
@@ -43,11 +44,14 @@ function validateFile(filePath) {
     const content = readFileSync(filePath, 'utf8')
 
     // 检查是否包含Vue外部依赖
-    if (filePath.endsWith('.umd.cjs')) {
+    if (filePath.endsWith('.umd.js')) {
       // 检查是否正确将Vue作为外部依赖
-      const hasVueExternal = content.includes('require("vue")') || 
+      // UMD 产物中：CJS 分支为 require("vue")，AMD 分支为 ["vue"]，全局分支引用全局 Vue 变量
+      const hasVueExternal = content.includes('require("vue")') ||
+                            content.includes("require('vue')") ||
                             content.includes('["vue"]') ||
-                            content.includes('t.Vue')
+                            content.includes('global.Vue') ||
+                            content.includes('Vue')
 
       if (!hasVueExternal) {
         console.warn(`警告: ${filePath} 可能未正确排除Vue依赖`)
@@ -110,7 +114,7 @@ function validateDist() {
     console.log('2. 例如在HTML中:')
     console.log('   ```html')
     console.log('   <script src="https://unpkg.com/vue@next"></script>')
-    console.log('   <script src="./dist/Button.umd.cjs"></script>')
+    console.log('   <script src="./dist/Button.umd.js"></script>')
     console.log('   ```')
     console.log('3. CSS样式已自动注入，无需单独引入CSS文件')
     console.log('4. 然后可以通过全局变量访问组件')

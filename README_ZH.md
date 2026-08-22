@@ -32,7 +32,7 @@ umd_components/
 │   └── build.js          # UMD构建脚本
 ├── dist/                 # 构建输出目录
 │   └── CustomHead.umd.js     # 头部组件UMD文件
-├── test.html             # UMD组件测试页面
+├── preview.html          # UMD组件测试页面
 ├── vue.js                # Vue运行时文件
 └── package.json
 ```
@@ -67,7 +67,7 @@ pnpm run build:umd:single 组件名 # 单独构建指定组件
 
 ### 在HTML中使用UMD组件
 
-参考previre.html
+参考preview.html
 
 ```html
 <!DOCTYPE html>
